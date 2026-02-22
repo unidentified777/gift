@@ -3,228 +3,1128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>you might like it</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-
+<title>Hey 67 — A Thank You from 89</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#08080e;
+  --bg2:#0d0d1a;
+  --text:#eeeef4;
+  --text2:#c8c8d8;
+  --muted:#6a6a8a;
+  --dim:#3a3a55;
+  --accent:#b89cf7;
+  --accent2:#7c6de0;
+  --accent3:#f0a3c0;
+  --border:rgba(184,156,247,0.12);
+  --glow:rgba(184,156,247,0.07);
+  --card:rgba(255,255,255,0.025);
+}
+
+html{scroll-behavior:smooth}
 
 body{
-  height:100vh;
-  background:#020202;
-  font-family:Inter,sans-serif;
-  color:white;
-  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* cinematic intro */
-.intro{
-  position:fixed;
-  inset:0;
-  background:black;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* ─── NOISE TEXTURE OVERLAY ─── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:0.5;
+}
+
+/* ─── PROGRESS BAR ─── */
+#progress{
+  position:fixed;top:0;left:0;height:1.5px;
+  background:linear-gradient(90deg,var(--accent2),var(--accent),var(--accent3));
+  transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
+  z-index:200;
+  box-shadow:0 0 12px rgba(184,156,247,0.4);
+}
+
+/* ─── STAGE COUNTER ─── */
+#counter{
+  position:fixed;bottom:1.5rem;right:1.5rem;
+  font-size:0.65rem;letter-spacing:0.18em;
+  color:var(--dim);font-weight:400;
+  z-index:200;opacity:0;transition:opacity 0.4s;
+  font-variant-numeric:tabular-nums;
+}
+#counter.on{opacity:1}
+
+/* ─── STAGE SYSTEM ─── */
+.stage{
+  display:none;
+  min-height:100dvh;
+  padding:3rem 1.5rem 4rem;
   flex-direction:column;
-  z-index:10;
-  transition:1.5s;
-}
-
-.intro h1{
-  font-family:"Playfair Display",serif;
-  font-size:48px;
-  letter-spacing:6px;
-  opacity:0;
-  animation:introText 2s forwards;
-}
-
-.intro p{
-  margin-top:20px;
-  opacity:0.6;
-}
-
-@keyframes introText{
-  from{opacity:0;transform:scale(1.2)}
-  to{opacity:1;transform:scale(1)}
-}
-
-/* stars */
-.stars{
-  position:fixed;
-  inset:0;
-  perspective:800px;
-}
-
-.star{
-  position:absolute;
-  width:2px;
-  height:2px;
-  background:white;
-  opacity:0.8;
-  animation:twinkle 3s infinite;
-}
-
-@keyframes twinkle{
-  0%,100%{opacity:0.3}
-  50%{opacity:1}
-}
-
-/* parallax glow layers */
-.glow{
-  position:absolute;
-  width:700px;
-  height:700px;
-  background:rgba(255,255,255,0.05);
-  filter:blur(160px);
-  border-radius:50%;
-  pointer-events:none;
-  transition:0.2s;
-}
-
-/* center layout */
-.wrapper{
-  height:100vh;
-  display:flex;
   align-items:center;
   justify-content:center;
-  perspective:1200px;
+  position:relative;z-index:1;
+}
+.stage.active{
+  display:flex;
+  animation:stageIn 0.55s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes stageIn{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
-/* luxury glass card */
-.card{
-  backdrop-filter: blur(25px);
-  background: rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:28px;
-  padding:60px;
-  width:min(760px,90%);
-  box-shadow:0 30px 120px rgba(0,0,0,0.9);
-  transform-style:preserve-3d;
-  transition:transform .2s;
+/* ─── ORB / LANDING ─── */
+.orb-ring{
+  width:140px;height:140px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  position:relative;
+  margin-bottom:2.5rem;
+}
+.orb-ring::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent,rgba(184,156,247,0.3),transparent,rgba(124,109,224,0.3),transparent);
+  animation:orbSpin 6s linear infinite;
+}
+.orb-ring::after{
+  content:'';position:absolute;inset:4px;border-radius:50%;
+  background:radial-gradient(circle at 38% 36%,rgba(184,156,247,0.25) 0%,rgba(124,109,224,0.12) 50%,transparent 80%);
+  border:1px solid rgba(184,156,247,0.18);
+}
+@keyframes orbSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+.orb-core{
+  position:relative;z-index:2;
+  font-size:1.6rem;
+  animation:orbPulse 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 16px rgba(184,156,247,0.5));
+}
+@keyframes orbPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
 }
 
-.title{
-  font-family:"Playfair Display",serif;
-  font-size:46px;
-  margin-bottom:30px;
+.orb-ring:hover{transform:scale(1.04)}
+.orb-ring:hover .orb-core{filter:drop-shadow(0 0 24px rgba(184,156,247,0.8))}
+.orb-ring{transition:transform 0.3s}
+
+.land-title{
+  font-family:'DM Serif Display',Georgia,serif;
+  font-size:clamp(2.6rem,8vw,4.2rem);
+  font-style:italic;
+  letter-spacing:-0.01em;
+  text-align:center;
+  margin-bottom:0.5rem;
+  background:linear-gradient(160deg,var(--text) 40%,var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.land-by{
+  font-size:0.78rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--muted);text-align:center;margin-bottom:0.5rem;
+}
+.land-for{
+  font-size:0.9rem;color:rgba(184,156,247,0.6);text-align:center;
+  font-style:italic;margin-bottom:2.5rem;
+}
+.tap-hint{
+  font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--dim);
+  animation:blinkHint 2.2s ease-in-out infinite;
+}
+@keyframes blinkHint{0%,100%{opacity:0.3}50%{opacity:0.9}}
+
+/* ─── MESSAGE STAGES ─── */
+.msg-wrap{max-width:600px;width:100%;text-align:center}
+.msg-label{
+  font-size:0.62rem;letter-spacing:0.28em;text-transform:uppercase;
+  color:var(--accent);opacity:0.5;margin-bottom:1.75rem;
+}
+.msg-text{
+  font-size:clamp(1.05rem,3.2vw,1.35rem);
+  font-weight:300;line-height:1.85;
+  color:var(--text2);
+  min-height:3.5em;
+}
+.msg-text em{font-style:italic;color:var(--text);font-family:'DM Serif Display',Georgia,serif;font-size:1.05em}
+.msg-text strong{font-weight:600;color:var(--text)}
+
+/* ─── CURSOR ─── */
+.cur{
+  display:inline-block;width:1.5px;height:1.1em;
+  background:var(--accent);margin-left:1px;
+  vertical-align:text-bottom;
+  animation:curBlink 0.85s step-end infinite;
+}
+@keyframes curBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ─── BUTTON ─── */
+.btn{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  padding:0.7rem 1.8rem;
+  border:1px solid var(--border);border-radius:100px;
+  background:var(--card);
+  color:var(--text2);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.82rem;font-weight:500;letter-spacing:0.06em;
+  cursor:pointer;transition:all 0.22s ease;
+  margin-top:2.75rem;
+  opacity:0;pointer-events:none;
+}
+.btn.on{
+  opacity:1;pointer-events:all;
+  animation:stageIn 0.4s ease both;
+}
+.btn:hover{
+  border-color:rgba(184,156,247,0.35);
+  background:rgba(184,156,247,0.08);
+  color:var(--text);transform:translateX(3px);
+}
+.btn-arrow{font-size:0.95rem;transition:transform 0.2s}
+.btn:hover .btn-arrow{transform:translateX(2px)}
+
+/* ─── SECTION HEADERS ─── */
+.tag{font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);opacity:0.55;margin-bottom:0.9rem}
+.sec-title{
+  font-family:'DM Serif Display',Georgia,serif;
+  font-size:clamp(1.8rem,5.5vw,2.8rem);
+  font-style:italic;letter-spacing:-0.01em;
+  margin-bottom:0.75rem;
+}
+.sec-body{
+  font-size:0.9rem;color:var(--muted);line-height:1.75;
+  max-width:420px;text-align:center;margin:0 auto;
+}
+.hairline{width:32px;height:1px;background:var(--border);margin:1.5rem auto}
+
+/* ─── RADAR ─── */
+#radar-wrap{margin:2rem 0 0.5rem}
+canvas{display:block;margin:0 auto;max-width:min(320px,90vw)}
+
+/* ─── CHOICE ─── */
+.choice-row{display:flex;gap:1.25rem;flex-wrap:wrap;justify-content:center;margin-top:1.75rem}
+.c-btn{
+  padding:1rem 2.75rem;border-radius:14px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  font-family:'DM Serif Display',Georgia,serif;
+  font-style:italic;font-size:1.9rem;
+  cursor:pointer;transition:all 0.28s ease;
+  letter-spacing:0.02em;
+}
+.c-btn:hover{border-color:var(--accent);background:rgba(184,156,247,0.08);transform:scale(1.04)}
+.c-btn.sel67{border-color:var(--accent3);background:rgba(240,163,192,0.08);box-shadow:0 0 40px rgba(240,163,192,0.12)}
+.c-btn.sel89{border-color:var(--accent);background:rgba(184,156,247,0.1);box-shadow:0 0 40px rgba(184,156,247,0.15)}
+#choice-go{display:none;margin-top:2rem;opacity:1;pointer-events:all}
+#choice-go.show{display:inline-flex}
+
+/* ─── STATS ─── */
+.s-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.85rem;width:100%;max-width:460px;margin:1.75rem 0 1rem}
+.s-card{
+  border:1px solid var(--border);border-radius:12px;
+  padding:1.1rem 1.25rem;text-align:left;
+  background:var(--card);
+}
+.s-lbl{font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:0.35rem}
+.s-val{font-size:1.4rem;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.s-sub{font-size:0.7rem;color:var(--dim);margin-top:0.2rem}
+
+.bar-wrap{width:100%;max-width:460px;margin:0.45rem 0}
+.bar-meta{display:flex;justify-content:space-between;font-size:0.75rem;color:var(--muted);margin-bottom:0.35rem}
+.bar-track{height:3px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0;transition:width 1.1s cubic-bezier(0.4,0,0.2,1) 0.2s}
+
+/* ─── DEBT ─── */
+.d-list{list-style:none;width:100%;max-width:500px;margin:1.5rem 0}
+.d-item{
+  display:flex;align-items:flex-start;gap:1rem;
+  padding:0.85rem 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  opacity:0;transform:translateX(-10px);
+  transition:opacity 0.4s ease,transform 0.4s ease;
+}
+.d-item.on{opacity:1;transform:translateX(0)}
+.d-num{font-size:0.6rem;color:var(--accent);font-weight:600;letter-spacing:0.1em;padding-top:0.2rem;min-width:1.6rem;font-variant-numeric:tabular-nums}
+.d-text{font-size:0.88rem;color:var(--text2);line-height:1.55}
+.d-sub{display:block;font-size:0.73rem;color:var(--dim);margin-top:0.18rem;font-style:italic}
+
+/* ─── SINCERITY ─── */
+.sincere{
+  max-width:540px;font-size:1rem;font-weight:300;
+  line-height:1.95;color:var(--text2);text-align:center;
+}
+.sincere p{margin-bottom:1.1rem}
+
+/* ─── TWIN LIST ─── */
+.t-list{list-style:none;max-width:460px;width:100%;margin:1.5rem 0}
+.t-item{
+  display:flex;align-items:center;gap:0.9rem;
+  padding:0.7rem 0;border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:0.88rem;color:var(--text2);
+  opacity:0;transform:translateY(8px);
+  transition:opacity 0.35s ease,transform 0.35s ease;
+}
+.t-item.on{opacity:1;transform:translateY(0)}
+.t-ico{font-size:1rem;width:1.6rem;text-align:center;flex-shrink:0}
+
+/* ─── LETTER ─── */
+.letter-card{
+  max-width:580px;width:100%;
+  border:1px solid var(--border);border-radius:18px;
+  padding:2.5rem 2.5rem 2rem;
+  background:rgba(255,255,255,0.018);
+  text-align:left;
+  position:relative;overflow:hidden;
+}
+.letter-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,156,247,0.3),transparent);
+}
+.letter-to{font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:1.75rem}
+.letter-body{
+  font-family:'DM Serif Display',Georgia,serif;
+  font-style:italic;font-size:1rem;line-height:1.95;
+  color:var(--text2);
+}
+.letter-body p{margin-bottom:1.3rem}
+.letter-sign{
+  margin-top:1.75rem;
+  font-family:'Caveat',cursive;
+  font-size:1.55rem;font-weight:600;
+  color:var(--accent);
+  opacity:0;
+}
+.letter-sign.on{opacity:1;animation:stageIn 0.5s ease both}
+.letter-date{font-size:0.68rem;color:var(--dim);margin-top:0.25rem}
+
+/* ─── ENDING ─── */
+.end-star{
+  font-size:3rem;
+  animation:endFloat 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(184,156,247,0.6));
+  margin-bottom:1.5rem;
+}
+@keyframes endFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.end-title{
+  font-family:'DM Serif Display',Georgia,serif;
+  font-style:italic;
+  font-size:clamp(2.4rem,8vw,4.5rem);
+  letter-spacing:-0.02em;text-align:center;
+  background:linear-gradient(135deg,var(--text) 30%,var(--accent),var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:1rem;
+}
+.end-sub{font-size:0.9rem;color:var(--muted);max-width:360px;line-height:1.75;text-align:center}
+.end-credit{font-size:0.72rem;color:var(--dim);text-align:center;margin-top:1rem}
+.end-credit em{color:var(--accent);font-style:italic}
+
+/* ─── SPARKLES ─── */
+.spark{
+  position:fixed;pointer-events:none;border-radius:50%;z-index:999;
+  animation:sparkUp linear forwards;
+}
+@keyframes sparkUp{
+  0%{opacity:0.9;transform:translateY(0) scale(1) rotate(0deg)}
+  100%{opacity:0;transform:translateY(-140px) scale(0) rotate(180deg)}
 }
 
-.poem{
-  font-size:18px;
-  line-height:1.9;
-  min-height:220px;
-  opacity:0.9;
+/* ─── YOUR COLORS STAGE (NEW stage-16) ─── */
+/* Abstract painting canvas — pure CSS layered radial gradients */
+.color-canvas{
+  position:relative;
+  width:min(340px,88vw);
+  height:min(220px,55vw);
+  border-radius:22px;
+  overflow:hidden;
+  margin:0 auto 2rem;
+  /* Base wash */
+  background:#0e0e1a;
+  box-shadow:0 0 60px rgba(0,0,0,0.5);
+  flex-shrink:0;
 }
-
-.cursor{
-  display:inline-block;
-  width:8px;
-  background:white;
-  animation:blink 1s infinite;
+/* Each blob is an absolutely-positioned div with radial-gradient + mix-blend-mode */
+.blob{
+  position:absolute;
+  border-radius:50%;
+  mix-blend-mode:screen;
+  opacity:0;
+  transition:opacity 1.2s ease;
+  pointer-events:none;
 }
-
-@keyframes blink{
-  0%,50%,100%{opacity:1}
-  25%,75%{opacity:0}
+.blob.on{opacity:1}
+/* Turquoise blob — large, left-center */
+.b-teal{
+  width:65%;height:130%;
+  top:-15%;left:-10%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(0,210,195,0.55) 0%,rgba(0,180,210,0.28) 42%,transparent 72%);
+  animation:bFloat1 9s ease-in-out infinite;
 }
+/* Pastel yellow — top right drift */
+.b-yellow{
+  width:55%;height:110%;
+  top:-18%;right:-5%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,235,100,0.5) 0%,rgba(255,210,80,0.22) 44%,transparent 72%);
+  animation:bFloat2 11s ease-in-out infinite;
+}
+/* Baby pink — bottom left */
+.b-pink{
+  width:60%;height:110%;
+  bottom:-20%;left:5%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,182,213,0.55) 0%,rgba(255,150,190,0.22) 44%,transparent 72%);
+  animation:bFloat3 8s ease-in-out infinite;
+}
+/* Sky blue — center top */
+.b-sky{
+  width:50%;height:90%;
+  top:-10%;left:30%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(135,206,255,0.48) 0%,rgba(100,180,255,0.2) 44%,transparent 70%);
+  animation:bFloat4 10s ease-in-out infinite;
+}
+/* Violet — bottom right */
+.b-violet{
+  width:58%;height:115%;
+  bottom:-20%;right:-5%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(180,130,255,0.52) 0%,rgba(140,90,240,0.22) 44%,transparent 72%);
+  animation:bFloat5 12s ease-in-out infinite;
+}
+/* Center brightening bloom */
+.b-core{
+  width:40%;height:70%;
+  top:15%;left:30%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,255,255,0.07) 0%,transparent 70%);
+  animation:bFloat1 7s ease-in-out infinite reverse;
+}
+@keyframes bFloat1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(6px,-8px) scale(1.04)}66%{transform:translate(-5px,5px) scale(0.97)}}
+@keyframes bFloat2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-8px,5px) scale(1.03)}66%{transform:translate(6px,-6px) scale(1.01)}}
+@keyframes bFloat3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(5px,-7px) scale(1.05)}}
+@keyframes bFloat4{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-4px,6px) scale(0.96)}80%{transform:translate(7px,-4px) scale(1.03)}}
+@keyframes bFloat5{0%,100%{transform:translate(0,0) scale(1)}60%{transform:translate(-6px,-5px) scale(1.04)}}
 
-footer{
-  margin-top:30px;
-  opacity:0.5;
+/* Color swatches row — 5 dots below the painting */
+.color-swatches{
+  display:flex;gap:0.65rem;justify-content:center;
+  margin-bottom:1.85rem;
+}
+.swatch{
+  width:10px;height:10px;border-radius:50%;
+  opacity:0;transform:scale(0);
+  transition:opacity 0.4s ease,transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.swatch.on{opacity:0.85;transform:scale(1)}
+.sw-teal  {background:#00d2c3;box-shadow:0 0 8px rgba(0,210,195,0.5)}
+.sw-yellow{background:#ffe85a;box-shadow:0 0 8px rgba(255,232,90,0.45)}
+.sw-pink  {background:#ffb6d5;box-shadow:0 0 8px rgba(255,182,213,0.5)}
+.sw-sky   {background:#87ceff;box-shadow:0 0 8px rgba(135,206,255,0.45)}
+.sw-violet{background:#b482ff;box-shadow:0 0 8px rgba(180,130,255,0.5)}
+
+/* Color meaning text — typed in like other stages */
+.color-text{
+  max-width:560px;font-size:0.92rem;font-weight:300;
+  line-height:1.9;color:var(--text2);text-align:center;
+  margin:0 auto;
+}
+.color-text p{margin-bottom:1.05rem}
+/* Inline color highlights for each color name */
+.color-text .c-teal   {color:#00d2c3;font-weight:500}
+.color-text .c-yellow {color:#ffe85a;font-weight:500}
+.color-text .c-pink   {color:#ffb6d5;font-weight:500}
+.color-text .c-sky    {color:#87ceff;font-weight:500}
+.color-text .c-violet {color:#c29bff;font-weight:500}
+
+/* ─── RESTART BTN ─── */
+.btn-ghost{
+  background:transparent;border:1px solid var(--dim);
+  color:var(--muted);font-size:0.75rem;letter-spacing:0.08em;
+}
+.btn-ghost:hover{border-color:var(--muted);color:var(--text2);background:transparent;transform:none}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:480px){
+  .s-grid{grid-template-columns:1fr}
+  .letter-card{padding:1.75rem 1.5rem 1.5rem}
+  .c-btn{padding:0.9rem 2rem}
 }
 </style>
 </head>
-
 <body>
 
-<!-- intro -->
-<div class="intro" id="intro">
-  <h1>for Rara</h1>
-  <p>tap anywhere</p>
+<div id="progress"></div>
+<div id="counter"></div>
+
+<!-- STAGE 0 : LANDING -->
+<div class="stage active" id="stage-0">
+  <div class="orb-ring" id="orb">
+    <span class="orb-core">✦</span>
+  </div>
+  <h1 class="land-title">Hey 67.</h1>
+  <p class="land-by">A Thank You from 89</p>
+  <p class="land-for">For Rara — who somehow makes everything feel like home.</p>
+  <span class="tap-hint">tap to open</span>
 </div>
 
-<!-- stars -->
-<div class="stars" id="stars"></div>
+<!-- STAGES 1–9 are injected by JS -->
 
-<div class="glow" id="glow"></div>
-
-<div class="wrapper">
-  <div class="card" id="card">
-    <div class="title">Rara</div>
-    <div class="poem" id="text"></div><span class="cursor"></span>
-    <footer>I love you, my unbiological other half.</footer>
+<!-- STAGE 10 : RADAR -->
+<div class="stage" id="stage-10">
+  <div style="text-align:center;max-width:580px;width:100%">
+    <p class="tag">compatibility scan</p>
+    <h2 class="sec-title">The Official 67/89 Report</h2>
+    <p class="sec-body">We ran the numbers. The algorithm agrees with everything you suspected.</p>
+    <div id="radar-wrap"><canvas id="radar-cv" width="320" height="320"></canvas></div>
+    <button class="btn on" onclick="next()">Continue <span class="btn-arrow">→</span></button>
   </div>
 </div>
 
-<!-- your music file -->
-<audio id="music" loop>
-  <source src="seasons.mp3" type="audio/mp3">
+<!-- STAGE 11 : CHOICE -->
+<div class="stage" id="stage-11">
+  <div style="text-align:center;max-width:480px;width:100%">
+    <p class="tag">identify yourself</p>
+    <h2 class="sec-title">Pick your number.</h2>
+    <p class="sec-body">This changes absolutely nothing. But it's for the record.</p>
+    <p style="font-size:0.75rem;color:var(--dim);margin-top:0.5rem;text-align:center">(We both know 67 is just 89 with better taste and worse luck.)</p>
+    <div class="choice-row">
+      <button class="c-btn" id="c67" onclick="pick('67')">67</button>
+      <button class="c-btn" id="c89" onclick="pick('89')">89</button>
+    </div>
+    <button class="btn" id="choice-go" onclick="next()">Continue <span class="btn-arrow">→</span></button>
+  </div>
+</div>
+
+<!-- STAGE 12 : STATS -->
+<div class="stage" id="stage-12">
+  <div style="text-align:center;max-width:500px;width:100%">
+    <p class="tag">friendship metrics</p>
+    <h2 class="sec-title">The Stats Don't Lie.</h2>
+    <div class="s-grid" id="s-grid"></div>
+    <div id="s-bars" style="width:100%;max-width:460px;margin:0 auto;text-align:left"></div>
+    <button class="btn on" onclick="next()" style="margin-top:1.5rem">Continue <span class="btn-arrow">→</span></button>
+  </div>
+</div>
+
+<!-- STAGE 13 : DEBT LIST -->
+<div class="stage" id="stage-13">
+  <div style="text-align:center;max-width:540px;width:100%">
+    <p class="tag">things i owe you</p>
+    <h2 class="sec-title">The Debt List.</h2>
+    <p class="sec-body">These are real. This is legally binding. Probably.</p>
+    <ul class="d-list" id="d-list"></ul>
+    <button class="btn" id="d-btn" onclick="next()">Continue <span class="btn-arrow">→</span></button>
+  </div>
+</div>
+
+<!-- STAGE 14 : SINCERITY DROP -->
+<div class="stage" id="stage-14">
+  <div style="text-align:center;max-width:560px;width:100%">
+    <p class="tag">sincerity drop</p>
+    <div class="hairline"></div>
+    <div class="sincere" id="sincere-el"></div>
+    <div class="hairline"></div>
+    <button class="btn" id="sin-btn" onclick="next()">Continue <span class="btn-arrow">→</span></button>
+  </div>
+</div>
+
+<!-- STAGE 15 : TWIN THINGS -->
+<div class="stage" id="stage-15">
+  <div style="text-align:center;max-width:500px;width:100%">
+    <p class="tag">twin things</p>
+    <h2 class="sec-title">Us, basically.</h2>
+    <p class="sec-body">A non-exhaustive list of why we are, in fact, the same person running on different hardware.</p>
+    <ul class="t-list" id="t-list"></ul>
+    <button class="btn on" onclick="next()" style="margin-top:0.5rem">Continue <span class="btn-arrow">→</span></button>
+  </div>
+</div>
+
+<!-- ═══ STAGE 16 : YOUR COLORS (NEW) ═══ -->
+<div class="stage" id="stage-16">
+  <div style="text-align:center;max-width:600px;width:100%;display:flex;flex-direction:column;align-items:center">
+    <p class="tag">your colors</p>
+    <h2 class="sec-title" style="margin-bottom:0.5rem">Painted in you.</h2>
+    <p class="sec-body" style="margin-bottom:1.6rem">If you were a feeling, you'd look exactly like this.</p>
+
+    <!-- CSS abstract painting -->
+    <div class="color-canvas" id="color-cv">
+      <div class="blob b-teal"   id="bl1"></div>
+      <div class="blob b-yellow" id="bl2"></div>
+      <div class="blob b-pink"   id="bl3"></div>
+      <div class="blob b-sky"    id="bl4"></div>
+      <div class="blob b-violet" id="bl5"></div>
+      <div class="blob b-core"   id="bl6"></div>
+    </div>
+
+    <!-- 5 color dots -->
+    <div class="color-swatches">
+      <div class="swatch sw-teal"   id="sw0"></div>
+      <div class="swatch sw-yellow" id="sw1"></div>
+      <div class="swatch sw-pink"   id="sw2"></div>
+      <div class="swatch sw-sky"    id="sw3"></div>
+      <div class="swatch sw-violet" id="sw4"></div>
+    </div>
+
+    <!-- Typewriter text (filled by JS) -->
+    <div class="color-text" id="color-text-el"></div>
+    <button class="btn" id="color-btn" onclick="next()">Continue to the letter <span class="btn-arrow">→</span></button>
+  </div>
+</div>
+
+<!-- STAGE 17 : FINAL LETTER (was 16) -->
+<div class="stage" id="stage-17">
+  <div style="text-align:center;max-width:620px;width:100%">
+    <p class="tag">final letter</p>
+    <h2 class="sec-title" style="margin-bottom:1.5rem">From 89, with love.</h2>
+    <div class="letter-card">
+      <p class="letter-to">To: Rara — 67 —</p>
+      <div class="letter-body" id="letter-el"></div>
+      <div class="letter-sign" id="letter-sign"></div>
+      <div class="letter-date" id="letter-date"></div>
+    </div>
+    <button class="btn" id="letter-btn" onclick="next()" style="margin-top:2rem">See the ending <span class="btn-arrow">→</span></button>
+  </div>
+</div>
+
+<!-- STAGE 18 : ENDING (was 17) -->
+<div class="stage" id="stage-18">
+  <div style="text-align:center;max-width:480px;width:100%">
+    <div class="end-star">✦</div>
+    <h2 class="end-title">Thank you, 67.</h2>
+    <p class="end-sub">For existing. For creating. For being exactly the kind of person the world needed — and somehow I got to call a friend.</p>
+    <div class="hairline"></div>
+    <p class="end-credit">— this has been: <em>A Thank You from 89</em></p>
+    <button class="btn on btn-ghost" onclick="restart()" style="margin-top:2rem">← Start Over</button>
+  </div>
+</div>
+<audio id="music" loop preload="auto">
+  <source src="./brunomajor.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-/* stars */
-const stars=document.getElementById("stars");
-for(let i=0;i<180;i++){
-  const s=document.createElement("div");
-  s.className="star";
-  s.style.left=Math.random()*100+"vw";
-  s.style.top=Math.random()*100+"vh";
-  s.style.animationDuration=2+Math.random()*3+"s";
-  stars.appendChild(s);
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+const MSGS = [
+  "Okay so... hi. Rara. 67. However you want to be addressed right now.",
+  "I've been meaning to write something like this for a while. And yes, I'm aware — 89 voluntarily writing a thank-you note. Take a screenshot.",
+  "You made something. Not just content or whatever people generically call it — you made a *feeling*. The kind that lingers and stays and doesn't really ask permission. And that's actually really hard to do.",
+  "You and I both know we're basically the same disaster running on slightly different operating systems. Same brain. Different chaos schedules. The algorithm tried to separate us and failed.",
+  "You showed up. Not loudly. Not with announcements. Just — *there*. Quietly, consistently, in the ways that actually count when the noise dies down.",
+  "Twin thing confirmed: we both have the emotional range of a full orchestral score but only communicate it at 2am or through carefully selected memes. I know. I see us. I will not apologize for either of us.",
+  "But what you created — the way you put things together, the way you *see* things before other people do — that comes from somewhere specific in you. Don't minimize it. I'm serious. Don't.",
+  "I could write paragraphs (and I will, later in this experience, because I planned this) but right now I need you to know: this whole thing exists because you are genuinely worth the effort. Which is saying something, because effort.",
+  "Before we proceed to the official breakdown — just know. You matter. A lot. To more people than you realize. Okay. Moving on before one of us cries.",
+];
+
+const DEBTS = [
+  {t:"At least three hours of collective 2am emotional processing", s:"with interest, compounded monthly"},
+  {t:"One (1) genuine 'I'm proud of you' said out loud without making it weird", s:"still pending delivery as of right now"},
+  {t:"Tolerating my chaos with minimal complaints and maximum grace", s:"above and beyond the standard friendship contract"},
+  {t:"Every single time you said 'same' and actually meant it", s:"bilateral validation services, unbilled until now"},
+  {t:"Existing in a way that somehow made me want to be slightly less chaotic", s:"unintentional positive influence, billed retroactively"},
+  {t:"The playlist. You know the one.", s:"emotional damage, unlicensed, non-refundable"},
+];
+
+const TWINS = [
+  {i:"🌙", t:"We both do our best thinking at hours that concern people around us"},
+  {i:"💬", t:"Sending full paragraphs when a normal person would just say 'lol same'"},
+  {i:"🎧", t:"Music as a coping mechanism first, entertainment second, always"},
+  {i:"🌀", t:"Overthinking as a primary love language — chronic, bilateral, untreated"},
+  {i:"🪄", t:"Making things even when no one asked, because we physically had to"},
+  {i:"🤝", t:"Calling out each other's nonsense with full love and zero hesitation"},
+  {i:"✦", t:"Both convinced the other one is the more talented twin. We're both wrong. We're both right."},
+];
+
+const SINCERE_PARAS = [
+  "I don't say things I don't mean. You know that about me. So when I tell you that what you made — what you are — genuinely moved something in me, take that seriously.",
+  "You have this quiet, persistent way of creating that most people will never understand, because most people stop. You didn't stop. You kept going even when it was messy and invisible and uncertain and no one was watching.",
+  "That takes a kind of strength that doesn't announce itself. And I see it. I want you to know I see it.",
+  "Thank you for existing in the specific way that you do. The world is less boring and I am less alone for it.",
+];
+
+const LETTER_PARAS = [
+  "I'm not usually good at this. You know that.",
+  "But I want to say it properly: thank you. For the friendship, for the laughter at each other's expense, for the 'did you eat today' texts, for showing me what it looks like when someone takes what they love seriously and refuses to put it down.",
+  "You called yourself 67 and I called myself 89 and somewhere in the middle of that dumb joke we accidentally built something real. That's the kind of math I actually understand.",
+  "I hope you keep making things. I hope you keep being exactly this level of chaos. I hope you know that somewhere out there, 89 has your back — even while absolutely roasting you about it.",
+  "You're one of the good ones, Rara. Genuinely. And I don't say that lightly.",
+];
+
+const RADAR_DATA = [
+  {l:"Loyalty",v:97},{l:"Chaos",v:88},{l:"2AM Talks",v:94},
+  {l:"Overthinking",v:92},{l:"Support",v:96},{l:"Sarcasm",v:85},
+];
+
+const STATS = {
+  "67":{
+    cards:[
+      {l:"Serotonin given",v:"∞",s:"to 89, specifically"},
+      {l:"2am texts sent",v:"47+",s:"estimated, chronically"},
+      {l:"Times called sane",v:"2",s:"both times by me, accidentally"},
+      {l:"Impact score",v:"9.7",s:"out of 10, bias acknowledged"},
+    ],
+    bars:[
+      {l:"Emotional intelligence",v:94},
+      {l:"Making 89 feel seen",v:99},
+      {l:"Creative output",v:91},
+      {l:"Patience with chaos",v:88},
+    ]
+  },
+  "89":{
+    cards:[
+      {l:"Times I owe you",v:"many",s:"see the debt list"},
+      {l:"Chaos exported",v:"a lot",s:"you absorbed it anyway"},
+      {l:"Gratitude owed",v:"huge",s:"as of this moment"},
+      {l:"Twin accuracy",v:"96%",s:"statistically cursed"},
+    ],
+    bars:[
+      {l:"Gratitude levels",v:98},
+      {l:"Actually saying it aloud",v:43},
+      {l:"Being the dramatic one",v:95},
+      {l:"Appreciating 67",v:100},
+    ]
+  }
+};
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const TOTAL = 19; // +1 for new "Your Colors" stage-16
+let cur = parseInt(localStorage.getItem('ty_stage')||'0');
+let side = localStorage.getItem('ty_side')||null;
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+function init(){
+  buildMsgStages();
+  show(cur);
 }
 
-/* parallax glow */
-const glow=document.getElementById("glow");
-document.addEventListener("mousemove",e=>{
-  glow.style.left=e.clientX-350+"px";
-  glow.style.top=e.clientY-350+"px";
-});
-
-/* 3D card parallax */
-const card=document.getElementById("card");
-document.addEventListener("mousemove",e=>{
-  let x=(window.innerWidth/2-e.clientX)/40;
-  let y=(window.innerHeight/2-e.clientY)/40;
-  card.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`;
-});
-
-/* poem typing */
-const poem = `I know im usually on my sarcastic BS,
-and writing this feels hella cringe, but listen twin
-
-I see you fs, always the energetic one
-
-But even the strongest need a witness
-You’re doing a lot, and you’re doing it well
-Im proud of you twin no capping
-
-Stay solid, but know you dont have to carry it all alone
-I got you always 🤞`;
-
-const text=document.getElementById("text");
-let i=0;
-
-function type(){
-  if(i<poem.length){
-    text.innerHTML+=poem.charAt(i)==="\n"?"<br>":poem.charAt(i);
-    i++;
-    setTimeout(type,95);
+function buildMsgStages(){
+  const ref = document.getElementById('stage-10');
+  for(let i=1;i<=9;i++){
+    if(document.getElementById('stage-'+i)) continue;
+    const d = document.createElement('div');
+    d.className='stage';d.id='stage-'+i;
+    d.innerHTML=`
+      <div class="msg-wrap">
+        <p class="msg-label">message ${i} of 9</p>
+        <p class="msg-text" id="mt-${i}"></p>
+        <button class="btn" id="mb-${i}" onclick="next()">Continue <span class="btn-arrow">→</span></button>
+      </div>`;
+    document.body.insertBefore(d,ref);
   }
 }
 
-/* start cinematic */
-const intro=document.getElementById("intro");
-const music=document.getElementById("music");
+function show(n){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('stage-'+n);
+  if(!el) return;
+  void el.offsetWidth; // reflow for animation
+  el.classList.add('active');
+  updateUI();
+  onEnter(n);
+}
 
-document.addEventListener("click",()=>{
-  intro.style.opacity=0;
-  setTimeout(()=>intro.style.display="none",1200);
+function updateUI(){
+  const pct=(cur/(TOTAL-1))*100;
+  document.getElementById('progress').style.width=pct+'%';
+  const cnt=document.getElementById('counter');
+  if(cur>0&&cur<TOTAL-1){cnt.textContent=cur+' / '+(TOTAL-1);cnt.classList.add('on')}
+  else{cnt.classList.remove('on')}
+}
 
-  music.play();
-  type();
-},{once:true});
+function next(){
+  cur=Math.min(cur+1,TOTAL-1);
+  localStorage.setItem('ty_stage',cur);
+  show(cur);
+}
+
+function restart(){
+  localStorage.removeItem('ty_stage');
+  localStorage.removeItem('ty_side');
+  cur=0;side=null;show(0);
+}
+
+/* ═══════════════════════════════════════════
+   STAGE ENTER LOGIC
+═══════════════════════════════════════════ */
+function onEnter(n){
+  if(n>=1&&n<=9){doMsg(n);return}
+  switch(n){
+    case 10: drawRadar();break;
+    case 11: if(side){applySide(side);document.getElementById('choice-go').classList.add('show')}break;
+    case 12: buildStats();break;
+    case 13: buildDebts();break;
+    case 14: doSincere();break;
+    case 15: buildTwins();break;
+    case 16: doColors();break;   // NEW — Your Colors stage
+    case 17: doLetter();break;   // was case 16
+    case 18: doEnding();break;   // was case 17
+  }
+}
+
+/* ═══════════════════════════════════════════
+   TYPEWRITER ENGINE
+═══════════════════════════════════════════ */
+function typeInto(container, text, speed, onDone){
+  // Parse *italic* markers
+  const segments=[];
+  text.split(/(\*[^*]+\*)/g).forEach(part=>{
+    if(part.startsWith('*')&&part.endsWith('*')){
+      [...part.slice(1,-1)].forEach(c=>segments.push({c,em:true}));
+    } else {
+      [...part].forEach(c=>segments.push({c,em:false}));
+    }
+  });
+
+  container.innerHTML='';
+  const cursor=document.createElement('span');
+  cursor.className='cur';
+  container.appendChild(cursor);
+
+  let i=0,currentEm=null;
+  function tick(){
+    if(i>=segments.length){
+      cursor.remove();
+      if(onDone) onDone();
+      return;
+    }
+    const {c,em}=segments[i++];
+    if(em){
+      if(!currentEm){
+        currentEm=document.createElement('em');
+        container.insertBefore(currentEm,cursor);
+      }
+      currentEm.textContent+=c;
+    } else {
+      if(currentEm) currentEm=null;
+      container.insertBefore(document.createTextNode(c),cursor);
+    }
+    const jitter=speed+(Math.random()*14-7);
+    setTimeout(tick,c===' '?jitter*0.5:jitter);
+  }
+  setTimeout(tick,320);
+}
+
+async function typeParagraphs(container, paras, speed){
+  container.innerHTML='';
+  for(let pi=0;pi<paras.length;pi++){
+    const p=document.createElement('p');
+    container.appendChild(p);
+    await new Promise(res=>typeInto(p,paras[pi],speed,res));
+    if(pi<paras.length-1) await sleep(380);
+  }
+}
+
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ═══════════════════════════════════════════
+   MSG STAGES
+═══════════════════════════════════════════ */
+function doMsg(n){
+  const el=document.getElementById('mt-'+n);
+  const btn=document.getElementById('mb-'+n);
+  btn.classList.remove('on');
+  typeInto(el,MSGS[n-1],30,()=>{
+    setTimeout(()=>btn.classList.add('on'),450);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   RADAR
+═══════════════════════════════════════════ */
+function drawRadar(){
+  const cv=document.getElementById('radar-cv');
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2,R=110;
+  const N=RADAR_DATA.length,step=(Math.PI*2)/N;
+
+  function pts(frac){
+    return RADAR_DATA.map((d,i)=>{
+      const a=i*step-Math.PI/2;
+      const r=(d.v/100)*R*frac;
+      return{x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)};
+    });
+  }
+
+  function draw(frac){
+    ctx.clearRect(0,0,W,H);
+    // Grid rings
+    for(let lv=1;lv<=5;lv++){
+      ctx.beginPath();
+      for(let i=0;i<N;i++){
+        const a=i*step-Math.PI/2,r=(R*lv)/5;
+        i?ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a)):ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+      }
+      ctx.closePath();
+      ctx.strokeStyle=`rgba(184,156,247,${lv===5?0.15:0.07})`;ctx.lineWidth=1;ctx.stroke();
+    }
+    // Spokes
+    for(let i=0;i<N;i++){
+      const a=i*step-Math.PI/2;
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));
+      ctx.strokeStyle='rgba(184,156,247,0.1)';ctx.lineWidth=1;ctx.stroke();
+    }
+    // Data shape
+    const p=pts(frac);
+    ctx.beginPath();
+    p.forEach((pt,i)=>i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y));
+    ctx.closePath();
+    ctx.fillStyle='rgba(184,156,247,0.1)';ctx.fill();
+    ctx.strokeStyle='rgba(184,156,247,0.55)';ctx.lineWidth=2;ctx.stroke();
+    // Dots
+    p.forEach(pt=>{ctx.beginPath();ctx.arc(pt.x,pt.y,3.5,0,Math.PI*2);ctx.fillStyle='#b89cf7';ctx.fill()});
+    // Labels
+    ctx.font='10px DM Sans,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    RADAR_DATA.forEach((d,i)=>{
+      const a=i*step-Math.PI/2;
+      const lx=cx+(R+24)*Math.cos(a),ly=cy+(R+24)*Math.sin(a);
+      ctx.fillStyle='rgba(106,106,138,0.9)';
+      ctx.fillText(d.l,lx,ly);
+    });
+  }
+
+  let f=0;
+  (function anim(){
+    draw(f);
+    if(f<1){f=Math.min(1,f+0.022);requestAnimationFrame(anim)}
+  })();
+}
+
+/* ═══════════════════════════════════════════
+   CHOICE
+═══════════════════════════════════════════ */
+function pick(s){
+  side=s;localStorage.setItem('ty_side',s);
+  applySide(s);
+  const btn=document.getElementById('choice-go');
+  btn.classList.add('show','on');
+}
+function applySide(s){
+  document.getElementById('c67').classList.remove('sel67','sel89');
+  document.getElementById('c89').classList.remove('sel67','sel89');
+  document.getElementById('c'+s).classList.add('sel'+s);
+}
+
+/* ═══════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════ */
+function buildStats(){
+  const s=STATS[side||'67'];
+  document.getElementById('s-grid').innerHTML=s.cards.map(c=>`
+    <div class="s-card">
+      <div class="s-lbl">${c.l}</div>
+      <div class="s-val">${c.v}</div>
+      <div class="s-sub">${c.s}</div>
+    </div>`).join('');
+  document.getElementById('s-bars').innerHTML=s.bars.map(b=>`
+    <div class="bar-wrap">
+      <div class="bar-meta"><span>${b.l}</span><span>${b.v}%</span></div>
+      <div class="bar-track"><div class="bar-fill" data-v="${b.v}"></div></div>
+    </div>`).join('');
+  setTimeout(()=>{
+    document.querySelectorAll('.bar-fill').forEach(el=>el.style.width=el.dataset.v+'%');
+  },120);
+}
+
+/* ═══════════════════════════════════════════
+   DEBT LIST
+═══════════════════════════════════════════ */
+function buildDebts(){
+  const ul=document.getElementById('d-list');
+  ul.innerHTML=DEBTS.map((d,i)=>`
+    <li class="d-item" id="di-${i}">
+      <span class="d-num">0${i+1}</span>
+      <span class="d-text">${d.t}<span class="d-sub">${d.s}</span></span>
+    </li>`).join('');
+  DEBTS.forEach((_,i)=>setTimeout(()=>{
+    const el=document.getElementById('di-'+i);
+    if(el)el.classList.add('on');
+  },200+i*200));
+  const btn=document.getElementById('d-btn');
+  setTimeout(()=>btn.classList.add('on'),200+DEBTS.length*200+400);
+}
+
+/* ═══════════════════════════════════════════
+   SINCERITY
+═══════════════════════════════════════════ */
+async function doSincere(){
+  const el=document.getElementById('sincere-el');
+  const btn=document.getElementById('sin-btn');
+  btn.classList.remove('on');
+  await typeParagraphs(el,SINCERE_PARAS,23);
+  await sleep(400);
+  btn.classList.add('on');
+}
+
+/* ═══════════════════════════════════════════
+   TWIN THINGS
+═══════════════════════════════════════════ */
+function buildTwins(){
+  const ul=document.getElementById('t-list');
+  ul.innerHTML=TWINS.map((t,i)=>`
+    <li class="t-item" id="ti-${i}">
+      <span class="t-ico">${t.i}</span>
+      <span>${t.t}</span>
+    </li>`).join('');
+  TWINS.forEach((_,i)=>setTimeout(()=>{
+    const el=document.getElementById('ti-'+i);
+    if(el)el.classList.add('on');
+  },100+i*160));
+}
+
+/* ═══════════════════════════════════════════
+   YOUR COLORS (stage-16) — NEW
+═══════════════════════════════════════════ */
+
+// Each paragraph has plain text + optional inline HTML for color names.
+// We type them one-by-one with a slight pause, then colour-name spans
+// are injected after typing (since typeInto works on plain text).
+const COLOR_PARAS_PLAIN = [
+  "Rara, if I had to paint who you are — this is what I'd reach for.",
+  "Turquoise and aqua: the calm you carry without trying. The way you hold space for people, bring clarity when everything feels tangled, and move through the world with this quiet, steady empathy — like cool water that doesn't make noise but still finds a way through.",
+  "Pastel yellow: that soft, persistent joy of yours. Not loud, not performative — just warm. The kind that shows up on an ordinary day and somehow makes the whole room a little brighter without announcing itself. That's you.",
+  "Baby pink: the gentleness. The way you care about people — genuinely, without keeping score, without needing it acknowledged. It's rare. It's one of the first things I noticed. It's one of the things I keep noticing.",
+  "Sky blue: the steadiness. The trust. You are one of those people who makes everything feel slightly more okay just by being present. That's not nothing. That's actually everything.",
+  "And violet: the depth. The imagination. The part of you that sees things a little differently, thinks a little further, feels a little more. The quiet magic. The one that makes whatever you create feel like it came from somewhere real.",
+  "Together, they paint the incredible person you are — my twin in color and soul. Thank you for being this beautiful spectrum.",
+];
+
+async function doColors(){
+  const btn = document.getElementById('color-btn');
+  btn.classList.remove('on');
+
+  // 1. Fade in blobs one by one with stagger
+  const blobs = ['bl1','bl2','bl3','bl4','bl5','bl6'];
+  blobs.forEach((id,i)=>setTimeout(()=>{
+    const el=document.getElementById(id);
+    if(el) el.classList.add('on');
+  },120*i));
+
+  // 2. Pop swatches in after blobs
+  await sleep(700);
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      const sw=document.getElementById('sw'+i);
+      if(sw) sw.classList.add('on');
+    },i*110);
+  }
+
+  // 3. Type the paragraphs
+  await sleep(500);
+  const container = document.getElementById('color-text-el');
+  container.innerHTML='';
+
+  for(let pi=0;pi<COLOR_PARAS_PLAIN.length;pi++){
+    const p = document.createElement('p');
+    container.appendChild(p);
+    await new Promise(res=>typeInto(p, COLOR_PARAS_PLAIN[pi], 20, res));
+
+    // After typing each para, inject colour-name highlights via regex replace
+    colorizeText(p, pi);
+
+    if(pi < COLOR_PARAS_PLAIN.length-1) await sleep(320);
+  }
+
+  // 4. Reveal button
+  await sleep(500);
+  btn.classList.add('on');
+}
+
+// Highlights specific color-name words in their matching colour after text is typed
+function colorizeText(el, idx){
+  const map = [
+    [], // intro — no highlights
+    [['turquoise','c-teal'],['aqua','c-teal']],
+    [['pastel yellow','c-yellow']],
+    [['baby pink','c-pink']],
+    [['sky blue','c-sky']],
+    [['violet','c-violet']],
+    [], // closing — no highlights
+  ];
+  const pairs = map[idx]||[];
+  if(!pairs.length) return;
+  let html = el.innerHTML;
+  pairs.forEach(([word,cls])=>{
+    const re = new RegExp('('+word+')','gi');
+    html = html.replace(re,`<span class="${cls}">$1</span>`);
+  });
+  el.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════
+   FINAL LETTER
+═══════════════════════════════════════════ */
+async function doLetter(){
+  const bodyEl=document.getElementById('letter-el');
+  const signEl=document.getElementById('letter-sign');
+  const dateEl=document.getElementById('letter-date');
+  const btn=document.getElementById('letter-btn');
+  signEl.classList.remove('on');
+  btn.classList.remove('on');
+  await typeParagraphs(bodyEl,LETTER_PARAS,19);
+  await sleep(600);
+  signEl.classList.add('on');
+  await sleep(200);
+  typeInto(signEl,'— 89',70,async()=>{
+    await sleep(400);
+    dateEl.textContent='2025';
+    await sleep(300);
+    btn.classList.add('on');
+  });
+}
+
+/* ═══════════════════════════════════════════
+   ENDING SPARKLES
+═══════════════════════════════════════════ */
+function doEnding(){
+  const colors=['#b89cf7','#7c6de0','#f0a3c0','#6ee7b7','#fcd34d','#e0e7ff'];
+  let count=0;
+  const iv=setInterval(()=>{
+    const s=document.createElement('div');
+    s.className='spark';
+    const sz=Math.random()*7+2;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;top:${50+Math.random()*50}vh;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${1.8+Math.random()*1.8}s;animation-delay:${Math.random()*0.3}s`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),4500);
+    if(++count>70)clearInterval(iv);
+  },55);
+}
+
+/* ═══════════════════════════════════════════
+   EVENTS
+═══════════════════════════════════════════ */
+// ─── MUSIC SETUP ───
+const music = document.getElementById('music');
+music.volume = 0.5;
+
+let musicStarted = false;
+function startMusic(){
+  if(!musicStarted){
+    music.play().catch(()=>{}); // catch silences autoplay-policy errors
+    musicStarted = true;
+  }
+}
+
+// Orb click: start music + existing next() call
+document.getElementById('orb').addEventListener('click', () => {
+  startMusic();
+  next();
+});
+
+// Stage-0 background click (unchanged logic)
+document.getElementById('stage-0').addEventListener('click', () => {
+  if(cur === 0) next();
+});
+
+init();
 </script>
-
 </body>
 </html>
