@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>you might like it</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  height:100vh;
+  background:#020202;
+  font-family:Inter,sans-serif;
+  color:white;
+  overflow:hidden;
+}
+
+/* cinematic intro */
+.intro{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:10;
+  transition:1.5s;
+}
+
+.intro h1{
+  font-family:"Playfair Display",serif;
+  font-size:48px;
+  letter-spacing:6px;
+  opacity:0;
+  animation:introText 2s forwards;
+}
+
+.intro p{
+  margin-top:20px;
+  opacity:0.6;
+}
+
+@keyframes introText{
+  from{opacity:0;transform:scale(1.2)}
+  to{opacity:1;transform:scale(1)}
+}
+
+/* stars */
+.stars{
+  position:fixed;
+  inset:0;
+  perspective:800px;
+}
+
+.star{
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  opacity:0.8;
+  animation:twinkle 3s infinite;
+}
+
+@keyframes twinkle{
+  0%,100%{opacity:0.3}
+  50%{opacity:1}
+}
+
+/* parallax glow layers */
+.glow{
+  position:absolute;
+  width:700px;
+  height:700px;
+  background:rgba(255,255,255,0.05);
+  filter:blur(160px);
+  border-radius:50%;
+  pointer-events:none;
+  transition:0.2s;
+}
+
+/* center layout */
+.wrapper{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:1200px;
+}
+
+/* luxury glass card */
+.card{
+  backdrop-filter: blur(25px);
+  background: rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:28px;
+  padding:60px;
+  width:min(760px,90%);
+  box-shadow:0 30px 120px rgba(0,0,0,0.9);
+  transform-style:preserve-3d;
+  transition:transform .2s;
+}
+
+.title{
+  font-family:"Playfair Display",serif;
+  font-size:46px;
+  margin-bottom:30px;
+}
+
+.poem{
+  font-size:18px;
+  line-height:1.9;
+  min-height:220px;
+  opacity:0.9;
+}
+
+.cursor{
+  display:inline-block;
+  width:8px;
+  background:white;
+  animation:blink 1s infinite;
+}
+
+@keyframes blink{
+  0%,50%,100%{opacity:1}
+  25%,75%{opacity:0}
+}
+
+footer{
+  margin-top:30px;
+  opacity:0.5;
+}
+</style>
+</head>
+
+<body>
+
+<!-- intro -->
+<div class="intro" id="intro">
+  <h1>for Rara</h1>
+  <p>tap anywhere</p>
+</div>
+
+<!-- stars -->
+<div class="stars" id="stars"></div>
+
+<div class="glow" id="glow"></div>
+
+<div class="wrapper">
+  <div class="card" id="card">
+    <div class="title">Rara</div>
+    <div class="poem" id="text"></div><span class="cursor"></span>
+    <footer>I love you, my unbiological other half.</footer>
+  </div>
+</div>
+
+<!-- your music file -->
+<audio id="music" loop>
+  <source src="seasons.mp3" type="audio/mp3">
+</audio>
+
+<script>
+/* stars */
+const stars=document.getElementById("stars");
+for(let i=0;i<180;i++){
+  const s=document.createElement("div");
+  s.className="star";
+  s.style.left=Math.random()*100+"vw";
+  s.style.top=Math.random()*100+"vh";
+  s.style.animationDuration=2+Math.random()*3+"s";
+  stars.appendChild(s);
+}
+
+/* parallax glow */
+const glow=document.getElementById("glow");
+document.addEventListener("mousemove",e=>{
+  glow.style.left=e.clientX-350+"px";
+  glow.style.top=e.clientY-350+"px";
+});
+
+/* 3D card parallax */
+const card=document.getElementById("card");
+document.addEventListener("mousemove",e=>{
+  let x=(window.innerWidth/2-e.clientX)/40;
+  let y=(window.innerHeight/2-e.clientY)/40;
+  card.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`;
+});
+
+/* poem typing */
+const poem = `I know im usually on my sarcastic BS,
+and writing this feels hella cringe, but listen twin
+
+I see you fs, always the energetic one
+
+But even the strongest need a witness
+You’re doing a lot, and you’re doing it well
+Im proud of you twin no capping
+
+Stay solid, but know you dont have to carry it all alone
+I got you always 🤞`;
+
+const text=document.getElementById("text");
+let i=0;
+
+function type(){
+  if(i<poem.length){
+    text.innerHTML+=poem.charAt(i)==="\n"?"<br>":poem.charAt(i);
+    i++;
+    setTimeout(type,95);
+  }
+}
+
+/* start cinematic */
+const intro=document.getElementById("intro");
+const music=document.getElementById("music");
+
+document.addEventListener("click",()=>{
+  intro.style.opacity=0;
+  setTimeout(()=>intro.style.display="none",1200);
+
+  music.play();
+  type();
+},{once:true});
+</script>
+
+</body>
+</html>
